@@ -52,6 +52,46 @@ contract DigiQuip is ERC721URIStorage {
         );
         profiles[msg.sender] = _id;
     }
+    function uploadPost(String memory _postHash) external {
+        require(
+            balanceOf(msg.sender) > 0,
+            "Must own at least one NFT to upload a post"
+        );
+        //make sure the post hash exists
+        require(bytes(_postHash).length > 0,"Cannot pass an empty hash");
+        //increment post count
+        postCount++;
+        //add post to contract
+        posts[postCount] = Post(postCount, _postHash, 0, payable(msg.sender));
+        //trigger event
+        emit PostCreated(postCount, _postHash, 0, payable(msg.sender));
+    }
+
+    function tipPostOwner(uint256 _id) external payable{
+        require(_id > 0 && _id <= postCount, "Invalid post id");
+        //fetch the post
+        Post memory _post = posts[_id];
+        require(_post.author != msg.sender , "Cannot tip your own post");
+        //pay the author
+        _post.author.transfer(msg.value);
+        //increment the tip amount
+        _post.tipAmount += msg.value;
+        //update the image
+        posts[_id] = _post;
+        //trigger an event
+        emit PostTipped(postCount, _post.hash, _post.tipAmount, _post.author);
+    }
+    function getAllPosts() external view returns (Post[] memory _posts){
+        _posts = new Post[](postCount);
+        for(uint256 i=0; i< posts.length; i++){
+            _posts[i] = posts[i+1];
+        }
+    }
+
+    //fetchs all users nfts
+    function getAllNFTs() external view returns (uint256[] memory _ids) {
+       
+    }
 }
 
 

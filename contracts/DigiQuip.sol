@@ -42,7 +42,15 @@ contract DigiQuip is ERC721URIStorage {
         tokenCount++;
         _safeMint(msg.sender, tokenCount);
         _setTokenURI(tokenCount, _tokenURI);
-        return tokenCount;
+        setProfile(tokenCount);
+        return (tokenCount);
+    }
+    function setProfile(uint256 _id) public {
+        require(
+            ownerOf(_id) == msg.sender,
+            "Must own the nft you want to select as your profile"
+        );
+        profiles[msg.sender] = _id;
     }
 }
 

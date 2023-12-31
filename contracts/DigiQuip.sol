@@ -52,7 +52,8 @@ contract DigiQuip is ERC721URIStorage {
         );
         profiles[msg.sender] = _id;
     }
-    function uploadPost(String memory _postHash) external {
+
+    function uploadPost(string memory _postHash) external {
         require(
             balanceOf(msg.sender) > 0,
             "Must own at least one NFT to upload a post"
@@ -83,14 +84,22 @@ contract DigiQuip is ERC721URIStorage {
     }
     function getAllPosts() external view returns (Post[] memory _posts){
         _posts = new Post[](postCount);
-        for(uint256 i=0; i< posts.length; i++){
+        for(uint256 i=0; i< _posts.length; i++){
             _posts[i] = posts[i+1];
         }
     }
 
     //fetchs all users nfts
     function getAllNFTs() external view returns (uint256[] memory _ids) {
-       
+       _ids = new uint256[](balanceOf(msg.sender));
+       uint256 currentIndex;
+       uint256 _tokenCount = tokenCount;
+         for(uint256 i=1; i < _tokenCount; i++){
+              if(ownerOf(i) == msg.sender){
+                _ids[currentIndex] = i+1;
+                currentIndex++;
+              }
+         }
     }
 }
 

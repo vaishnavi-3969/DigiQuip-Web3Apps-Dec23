@@ -8,6 +8,7 @@ import TokenMaster from './abis/TokenMaster.json'
 
 import config from './config.json'
 import Events from './components/Events'
+import Gallery from './components/Gallery'
 
 function App() {
   const [provider, setProvider] = useState(null)
@@ -82,7 +83,9 @@ function App() {
           setToggle={setToggle}
         />
       )}
-      <Events/>
+      {/* events */}
+      {/* <Events/>
+      <Gallery/> */}
     </div>
   );
 }

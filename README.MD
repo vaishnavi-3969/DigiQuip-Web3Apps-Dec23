@@ -1,5 +1,5 @@
 <div align='center'>
-<h1>MLH's Web3Apps Dec'23 Hackathon</h1>
+<p>MLH's Web3Apps Dec'23 Hackathon</p>
 
 <h1>DigiQuip</h1>
 <p>

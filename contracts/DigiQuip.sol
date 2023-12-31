@@ -1,113 +1,92 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.9;
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-pragma solidity ^0.8.0;
+contract DigiQuip is ERC721 {
+    address public owner;
+    uint256 public totalOccasions;
+    uint256 public totalSupply;
 
-import "hardhat/console.sol";
-
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-
-contract DigiQuip is ERC721URIStorage {
-    uint256 public tokenCount;
-    uint256 public postCount;
-
-    mapping(uint256 => Post) public posts;
-    //address => nft id
-    mapping(address => uint256) public profiles;
-
-    struct Post {
+    struct Occasion {
         uint256 id;
-        string hash;
-        // string content;
-        uint256 tipAmount;
-        address payable author;
+        string name;
+        uint256 cost;
+        uint256 tickets;
+        uint256 maxTickets;
+        string date;
+        string time;
+        string location;
     }
 
-    event PostCreated (
-        uint256 id,
-        string hash,
-        uint256 tipAmount,
-        address payable author
-    );
+    mapping(uint256 => Occasion) occasions;
+    mapping(uint256 => mapping(address => bool)) public hasBought;
+    mapping(uint256 => mapping(uint256 => address)) public seatTaken;
+    mapping(uint256 => uint256[]) seatsTaken;
 
-    event PostTipped (
-        uint256 id,
-        string hash,
-        uint256 tipAmount,
-        address payable author
-    );
-
-    constructor() ERC721("DigiQuip", "DAPP") {}
-
-    function mint(string memory _tokenURI) external returns (uint256){
-        tokenCount++;
-        _safeMint(msg.sender, tokenCount);
-        _setTokenURI(tokenCount, _tokenURI);
-        setProfile(tokenCount);
-        return (tokenCount);
+    modifier onlyOwner() {
+        require(msg.sender == owner);
+        _;
     }
-    function setProfile(uint256 _id) public {
-        require(
-            ownerOf(_id) == msg.sender,
-            "Must own the nft you want to select as your profile"
+
+    constructor(
+        string memory _name,
+        string memory _symbol
+    ) ERC721(_name, _symbol) {
+        owner = msg.sender;
+    }
+
+    function list(
+        string memory _name,
+        uint256 _cost,
+        uint256 _maxTickets,
+        string memory _date,
+        string memory _time,
+        string memory _location
+    ) public onlyOwner {
+        totalOccasions++;
+        occasions[totalOccasions] = Occasion(
+            totalOccasions,
+            _name,
+            _cost,
+            _maxTickets,
+            _maxTickets,
+            _date,
+            _time,
+            _location
         );
-        profiles[msg.sender] = _id;
     }
 
-    function uploadPost(string memory _postHash) external {
-        require(
-            balanceOf(msg.sender) > 0,
-            "Must own at least one NFT to upload a post"
-        );
-        //make sure the post hash exists
-        require(bytes(_postHash).length > 0,"Cannot pass an empty hash");
-        //increment post count
-        postCount++;
-        //add post to contract
-        posts[postCount] = Post(postCount, _postHash, 0, payable(msg.sender));
-        //trigger event
-        emit PostCreated(postCount, _postHash, 0, payable(msg.sender));
+    function mint(uint256 _id, uint256 _seat) public payable {
+        require(_id != 0);
+        require(_id <= totalOccasions);
+
+        require(msg.value >= occasions[_id].cost);
+
+        require(seatTaken[_id][_seat] == address(0));
+        require(_seat <= occasions[_id].maxTickets);
+
+        occasions[_id].tickets -= 1; 
+
+        hasBought[_id][msg.sender] = true;
+        seatTaken[_id][_seat] = msg.sender;
+
+        seatsTaken[_id].push(_seat);
+
+        totalSupply++;
+
+        _safeMint(msg.sender, totalSupply);
     }
 
-    function tipPostOwner(uint256 _id) external payable{
-        require(_id > 0 && _id <= postCount, "Invalid post id");
-        //fetch the post
-        Post memory _post = posts[_id];
-        require(_post.author != msg.sender , "Cannot tip your own post");
-        //pay the author
-        _post.author.transfer(msg.value);
-        //increment the tip amount
-        _post.tipAmount += msg.value;
-        //update the image
-        posts[_id] = _post;
-        //trigger an event
-        emit PostTipped(postCount, _post.hash, _post.tipAmount, _post.author);
-    }
-    function getAllPosts() external view returns (Post[] memory _posts){
-        _posts = new Post[](postCount);
-        for(uint256 i=0; i< _posts.length; i++){
-            _posts[i] = posts[i+1];
-        }
+    function getOccasion(uint256 _id) public view returns (Occasion memory) {
+        return occasions[_id];
     }
 
-    //fetchs all users nfts
-    function getAllNFTs() external view returns (uint256[] memory _ids) {
-       _ids = new uint256[](balanceOf(msg.sender));
-       uint256 currentIndex;
-       uint256 _tokenCount = tokenCount;
-         for(uint256 i=1; i < _tokenCount; i++){
-              if(ownerOf(i) == msg.sender){
-                _ids[currentIndex] = i+1;
-                currentIndex++;
-              }
-         }
+    function getSeatsTaken(uint256 _id) public view returns (uint256[] memory) {
+        return seatsTaken[_id];
+    }
+
+    function withdraw() public onlyOwner {
+        (bool success, ) = owner.call{value: address(this).balance}("");
+        require(success);
     }
 }
-
-
-
-
-
-
-
-
-

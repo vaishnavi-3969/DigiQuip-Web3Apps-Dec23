@@ -3,8 +3,12 @@ import { ethers } from "ethers"
 import { Row, Form, Button, Card, ListGroup } from 'react-bootstrap'
 import { create as ipfsHttpClient } from 'ipfs-http-client'
 
-const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0')
-
+const client = ipfsHttpClient({
+    host: 'ipfs.infura.io',
+    port: 5001,
+    protocol: 'https',
+  });
+  
 const Home = ({ contract, account }) => {
     const [posts, setPosts] = useState('')
     const [hasProfile, setHasProfile] = useState(false)

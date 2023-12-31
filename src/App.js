@@ -1,105 +1,89 @@
-import {
-  Link,
-  BrowserRouter,
-  Routes,
-  Route
-} from "react-router-dom";
-import { useState, useEffect } from 'react'
-import { ethers } from "ethers"
-import DigiQuipAbi from './contractsData/digiQuip.json'
-import DigiQuipAddress from './contractsData/digiquip-address.json'
-import { Spinner, Navbar, Nav, Button, Container } from 'react-bootstrap'
-import logo from './assets/Logo.png'
-import Home from "./components/Home";
-import Profile from "./components/Profile";
-import './App.css';
+import { useEffect, useState } from 'react'
+import { ethers } from 'ethers'
+import Navigation from './components/Navigation'
+import Sort from './components/Sort'
+import Card from './components/Card'
+import SeatChart from './components/SeatChart'
+import TokenMaster from './abis/TokenMaster.json'
+
+import config from './config.json'
+import Events from './components/Events'
 
 function App() {
-  const [loading, setLoading] = useState(true)
+  const [provider, setProvider] = useState(null)
   const [account, setAccount] = useState(null)
-  const [contract, setContract] = useState({})
 
-  const web3Handler = async () => {
-    let accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    setAccount(accounts[0])
+  const [tokenMaster, setTokenMaster] = useState(null)
+  const [occasions, setOccasions] = useState([])
 
-    // Setup event listeners for metamask
-    window.ethereum.on('chainChanged', () => {
-      window.location.reload();
-    })
-    window.ethereum.on('accountsChanged', async () => {
-      setLoading(true)
-      web3Handler()
-    })
-    // Get provider from Metamask
+  const [occasion, setOccasion] = useState({})
+  const [toggle, setToggle] = useState(false)
+
+  const loadBlockchainData = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
-    // Get signer
-    const signer = provider.getSigner()
-    loadContract(signer)
-  }
-  const loadContract = async (signer) => {
+    setProvider(provider)
 
-    // Get deployed copy of DigiQuip contract
-    const contract = new ethers.Contract(DigiQuipAddress.address, DigiQuipAbi.abi, signer)
-    setContract(contract)
-    setLoading(false)
+    const network = await provider.getNetwork()
+    const tokenMaster = new ethers.Contract(config[network.chainId].TokenMaster.address, TokenMaster, provider)
+    setTokenMaster(tokenMaster)
+
+    const totalOccasions = await tokenMaster.totalOccasions()
+    const occasions = []
+
+    for (var i = 1; i <= totalOccasions; i++) {
+      const occasion = await tokenMaster.getOccasion(i)
+      occasions.push(occasion)
+    }
+
+    setOccasions(occasions)
+
+    window.ethereum.on('accountsChanged', async () => {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
+      const account = ethers.utils.getAddress(accounts[0])
+      setAccount(account)
+    })
   }
+
+  useEffect(() => {
+    loadBlockchainData()
+  }, [])
+
   return (
-    <BrowserRouter>
-      <div className="App">
-        <>
-          <Navbar expand="lg" bg="secondary" variant="dark">
-            <Container>
-              <Navbar.Brand href="/">
-                <img src={logo} width="40" height="40" className="" alt="" />
-                &nbsp; DigiQuip
-              </Navbar.Brand>
-              <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-              <Navbar.Collapse id="responsive-navbar-nav">
-                <Nav className="me-auto">
-                  <Nav.Link as={Link} to="/">Home</Nav.Link>
-                  <Nav.Link as={Link} to="/profile">Profile</Nav.Link>
-                </Nav>
-                <Nav>
-                  {account ? (
-                    <Nav.Link
-                      href={`https://etherscan.io/address/${account}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="button nav-button btn-sm mx-4">
-                      <Button variant="outline-light">
-                        {account.slice(0, 5) + '...' + account.slice(38, 42)}
-                      </Button>
+    <div>
+      <header>
+        <Navigation account={account} setAccount={setAccount} />
 
-                    </Nav.Link>
-                  ) : (
-                    <Button onClick={web3Handler} variant="outline-light">Connect Wallet</Button>
-                  )}
-                </Nav>
-              </Navbar.Collapse>
-            </Container>
-          </Navbar>
-        </>
-        <div>
-          {loading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
-              <Spinner animation="border" style={{ display: 'flex' }} />
-              <p className='mx-3 my-0'>Awaiting Metamask Connection...</p>
-            </div>
-          ) : (
-            <Routes>
-              <Route path="/" element={
-                <Home contract={contract} />
-              } />
-              <Route path="/profile" element={
-                <Profile contract={contract} />
-              } />
-            </Routes>
-          )}
-        </div>
+        <h2 className="header__title"><strong>Event</strong> Tickets</h2>
+      </header>
+      
+      <Sort />
+
+      <div className='cards'>
+        {occasions.map((occasion, index) => (
+          <Card
+            occasion={occasion}
+            id={index + 1}
+            tokenMaster={tokenMaster}
+            provider={provider}
+            account={account}
+            toggle={toggle}
+            setToggle={setToggle}
+            setOccasion={setOccasion}
+            key={index}
+          />
+        ))}
       </div>
-    </BrowserRouter>
 
+      {toggle && (
+        <SeatChart
+          occasion={occasion}
+          tokenMaster={tokenMaster}
+          provider={provider}
+          setToggle={setToggle}
+        />
+      )}
+      <Events/>
+    </div>
   );
 }
 

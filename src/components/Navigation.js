@@ -17,12 +17,10 @@ const Navigation = ({ account, setAccount }) => {
         <ul className='nav__links'>
           <li><NavLink href="/">Concerts</NavLink></li>
           <li><NavLink href="/">Sports/Gaming</NavLink></li>
-          <li><NavLink href="/">Arts & Theater</NavLink></li>
           <li><NavLink href="/">Townhall</NavLink></li>
           <li><NavLink href="/">Fitness Class</NavLink></li>
           <li><NavLink href="/">Cultural Fest</NavLink></li>
           <li><NavLink href="/">Book Club Meeting</NavLink></li>
-          <li><NavLink href="/gallery">Image Gallery</NavLink></li>
         </ul>
       </div>
 

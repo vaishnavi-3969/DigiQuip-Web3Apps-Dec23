@@ -13,7 +13,7 @@ const Profile = ({ contract }) => {
     const [loading, setLoading] = useState(true)
     const loadMyNFTs = async () => {
         // Get users nft ids
-        const results = await contract.getAllNFTs();
+        const results = await contract.getAllNfts();
         // Fetch metadata of each nft and add that to nft object.
         let nfts = await Promise.all(results.map(async i => {
             // get uri url of nft

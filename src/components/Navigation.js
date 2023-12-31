@@ -13,7 +13,6 @@ const Navigation = ({ account, setAccount }) => {
       <div className='nav__brand'>
         <h1>DigiQuip</h1>
 
-        
         <ul className='nav__links'>
           <li><NavLink href="/">Concerts</NavLink></li>
           <li><NavLink href="/">Sports/Gaming</NavLink></li>

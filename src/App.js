@@ -5,15 +5,12 @@ import Sort from './components/Sort'
 import Card from './components/Card'
 import SeatChart from './components/SeatChart'
 import TokenMaster from './abis/TokenMaster.json'
-
 import config from './config.json'
 import Events from './components/Events'
-import Gallery from './components/Gallery'
 
 function App() {
   const [provider, setProvider] = useState(null)
   const [account, setAccount] = useState(null)
-
   const [tokenMaster, setTokenMaster] = useState(null)
   const [occasions, setOccasions] = useState([])
 
@@ -54,9 +51,9 @@ function App() {
       <header>
         <Navigation account={account} setAccount={setAccount} />
 
-        <h2 className="header__title"><strong>Event</strong> Tickets</h2>
+        <h2 className="header__title"><strong>Community</strong> Events</h2>
       </header>
-      
+
       <Sort />
 
       <div className='cards'>
@@ -84,8 +81,18 @@ function App() {
         />
       )}
       {/* events */}
-      {/* <Events/>
-      <Gallery/> */}
+      <Events />
+
+      <footer className="bg-dark text-light py-4">
+        <div className="container text-center">
+          <p className="mb-0 small">
+            © 2023 DigiQuip. All rights reserved. | Designed for Web3Apps MLH Hackathon
+          </p>
+        </div>
+      </footer>
+
+
+
     </div>
   );
 }

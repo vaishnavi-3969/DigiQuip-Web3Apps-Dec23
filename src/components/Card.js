@@ -8,6 +8,7 @@ const Card = ({ occasion, toggle, setToggle, setOccasion }) => {
 
   return (
     <div className='card'>
+    
       <div className='card__info'>
         <p className='card__date'>
           <strong>{occasion.date}</strong><br />{occasion.time}

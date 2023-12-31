@@ -11,7 +11,7 @@ import DigiQuipAddress from './contractsData/digiquip-address.json'
 import { Spinner, Navbar, Nav, Button, Container } from 'react-bootstrap'
 import logo from './assets/Logo.png'
 import Home from "./components/Home";
-import Profile from './components/Profile'
+import Profile from "./components/Profile";
 import './App.css';
 
 function App() {
@@ -50,7 +50,7 @@ function App() {
         <>
           <Navbar expand="lg" bg="secondary" variant="dark">
             <Container>
-              <Navbar.Brand href="http://www.dappuniversity.com/bootcamp">
+              <Navbar.Brand href="/">
                 <img src={logo} width="40" height="40" className="" alt="" />
                 &nbsp; DigiQuip
               </Navbar.Brand>

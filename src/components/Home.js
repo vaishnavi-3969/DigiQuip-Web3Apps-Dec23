@@ -127,7 +127,7 @@ const Home = ({ contract }) => {
                                         height='30'
                                         src={post.author.avatar}
                                         alt=""
-                                    />                              />
+                                    />                              
                                     <small className="ms-2 me-auto d-inline">
                                         {post.author.username}
                                     </small>

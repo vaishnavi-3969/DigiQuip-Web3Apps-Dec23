@@ -1,24 +1,25 @@
 import { useState, useEffect } from 'react'
-import { ethers } from "ethers"
-import { Row, Form, Button, Card, ListGroup, Col } from 'react-bootstrap'
+import { Row, Form, Button, Card, Col } from 'react-bootstrap'
 import { create as ipfsHttpClient } from 'ipfs-http-client'
 
 
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0')
 
 
-const App = ({ contract }) => {
+const Profile = ({ contract }) => {
   const [profile, setProfile] = useState('')
   const [nfts, setNfts] = useState('')
   const [avatar, setAvatar] = useState(null)
   const [username, setUsername] = useState('')
   const [loading, setLoading] = useState(true)
+
+
   const loadMyNFTs = async () => {
-    // Get users nft ids
+    //get users nft ids
     const results = await contract.getMyNfts();
-    // Fetch metadata of each nft and add that to nft object.
+    //fetch metadata of each nft and add that to nft object.
     let nfts = await Promise.all(results.map(async i => {
-      // get uri url of nft
+      //get uri url of nft
       const uri = await contract.tokenURI(i)
       // fetch nft metadata
       const response = await fetch(uri)
@@ -32,6 +33,8 @@ const App = ({ contract }) => {
     setNfts(nfts)
     getProfile(nfts)
   }
+
+
   const getProfile = async (nfts) => {
     const address = await contract.signer.getAddress()
     const id = await contract.profiles(address)
@@ -39,6 +42,7 @@ const App = ({ contract }) => {
     setProfile(profile)
     setLoading(false)
   }
+
   const uploadToIPFS = async (event) => {
     event.preventDefault()
     const file = event.target.files[0]
@@ -47,10 +51,11 @@ const App = ({ contract }) => {
         const result = await client.add(file)
         setAvatar(`https://ipfs.infura.io/ipfs/${result.path}`)
       } catch (error) {
-        console.log("ipfs image upload error: ", error)
+        window.alert("IPFS image upload error: ", error)
       }
     }
   }
+
   const mintProfile = async (event) => {
     if (!avatar || !username) return
     try {
@@ -59,19 +64,22 @@ const App = ({ contract }) => {
       await (await contract.mint(`https://ipfs.infura.io/ipfs/${result.path}`)).wait()
       loadMyNFTs()
     } catch (error) {
-      window.alert("ipfs uri upload error: ", error)
+      window.alert("IPFS uri upload error: ", error)
     }
   }
+
   const switchProfile = async (nft) => {
     setLoading(true)
     await (await contract.setProfile(nft.id)).wait()
     getProfile(nfts)
   }
+
   useEffect(() => {
     if (!nfts) {
       loadMyNFTs()
     }
   })
+
   if (loading) return (
     <div className='text-center'>
       <main style={{ padding: "1rem 0" }}>
@@ -81,8 +89,11 @@ const App = ({ contract }) => {
   )
   return (
     <div className="mt-4 text-center">
-      {profile ? (<div className="mb-3"><h3 className="mb-3">{profile.username}</h3>
-        <img className="mb-3" style={{ width: '400px' }} src={profile.avatar} /></div>)
+      {profile ? (
+        <div className="mb-3"><h3 className="mb-3">{profile.username}</h3>
+        <img alt='' className="mb-3" style={{ width: '400px' }} src={profile.avatar} />
+        </div>
+        )
         :
         <h4 className="mb-4">No NFT profile, please create one...</h4>}
 
@@ -134,4 +145,4 @@ const App = ({ contract }) => {
   );
 }
 
-export default App;
+export default Profile;

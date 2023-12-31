@@ -5,7 +5,7 @@ import { create as ipfsHttpClient } from 'ipfs-http-client'
 
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0')
 
-const Home = ({ contract }) => {
+const Home = ({ contract, account }) => {
     const [posts, setPosts] = useState('')
     const [hasProfile, setHasProfile] = useState(false)
     const [post, setPost] = useState('')

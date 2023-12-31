@@ -1,10 +1,16 @@
 <div align='center'>
 <h1>MLH's Web3Apps Dec'23 Hackathon</h1>
 
-
-
 <h1>DigiQuip</h1>
-
+<p>
+Your Paperless Passport to Local Experiences! Seamlessly book seats for diverse community events, fostering connections in every neighborhood
+</p>
+<h1>Tech Stack</h1>
+<p align="center">
+    <img src="https://skillicons.dev/icons?i=reactjs,git,github,solidity,js" />
+  
+  + Hardhat 
+</p>
 <h1>How to Run locally?</h1>
 <div align="left">
   <pre>

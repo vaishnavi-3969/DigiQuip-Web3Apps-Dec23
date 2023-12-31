@@ -10,55 +10,53 @@ async function main() {
   const NAME = "TokenMaster"
   const SYMBOL = "TM"
 
-  // Deploy contract
   const TokenMaster = await ethers.getContractFactory("DigiQuip")
   const tokenMaster = await TokenMaster.deploy(NAME, SYMBOL)
   await tokenMaster.deployed()
 
   console.log(`Deployed TokenMaster Contract at: ${tokenMaster.address}\n`)
 
-  // List 6 events
   const occasions = [
-    {
-      name: "UFC Miami",
-      cost: tokens(3),
-      tickets: 0,
-      date: "May 31",
-      time: "6:00PM EST",
-      location: "Miami-Dade Arena - Miami, FL"
-    },
-    {
-      name: "ETH Tokyo",
-      cost: tokens(1),
-      tickets: 125,
-      date: "Jun 2",
-      time: "1:00PM JST",
-      location: "Tokyo, Japan"
-    },
-    {
-      name: "ETH Privacy Hackathon",
-      cost: tokens(0.25),
-      tickets: 200,
-      date: "Jun 9",
-      time: "10:00AM TRT",
-      location: "Turkey, Istanbul"
-    },
-    {
-      name: "Dallas Mavericks vs. San Antonio Spurs",
-      cost: tokens(5),
-      tickets: 0,
-      date: "Jun 11",
-      time: "2:30PM CST",
-      location: "American Airlines Center - Dallas, TX"
-    },
-    {
-      name: "ETH Global Toronto",
-      cost: tokens(1.5),
-      tickets: 125,
-      date: "Jun 23",
-      time: "11:00AM EST",
-      location: "Toronto, Canada"
-    }
+   {
+    name: "Cricket Fever in Pune",
+    cost: tokens(2),
+    tickets: 50,
+    date: "Apr 15",
+    time: "7:00 PM IST",
+    location: "Shivaji Cricket Stadium - Pune, India"
+  },
+  {
+    name: "Pune Tech Meetup",
+    cost: tokens(0.5),
+    tickets: 0,
+    date: "Apr 20",
+    time: "6:30 PM IST",
+    location: "Tech Hub - Pimpri-Chinchwad, India"
+  },
+  {
+    name: "Yoga in the Park",
+    cost: tokens(0.2),
+    tickets: 75,
+    date: "Apr 25",
+    time: "8:00 AM IST",
+    location: "Aundh Park - Pune, India"
+  },
+  {
+    name: "Pune Food Festival",
+    cost: tokens(1),
+    tickets: 150,
+    date: "May 5",
+    time: "12:00 PM IST",
+    location: "City Center - Pune, India"
+  },
+  {
+    name: "Local Art Exhibition",
+    cost: tokens(0.3),
+    tickets: 80,
+    date: "May 10",
+    time: "4:00 PM IST",
+    location: "Art Gallery - Pimpri-Chinchwad, India"
+  }
   ]
 
   for (var i = 0; i < 5; i++) {
